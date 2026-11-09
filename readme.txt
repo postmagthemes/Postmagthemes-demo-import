@@ -1,9 +1,9 @@
 === PostmagThemes One click Demo Import for WordPress Site ===
 Contributors: postmagthemes
-Tags: demo importer, one click import, import, customizer, widgets, ocdi
+Tags: demo importer, one click import, customizer, widgets, ocdi
 Requires at least: 4.7
 Tested up to: 7.1
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -12,15 +12,13 @@ Import a theme's demo content, widgets and customizer settings in one click. Wor
 
 == Description ==
 
-**PostmagThemes Demo Import** sets up your site to look like the theme demo in a single click. Instead of creating posts, pages, menus and widgets by hand, activate the plugin, go to **Appearance > Import Demo Data**, and import. Functionally it is theme demo import plugin.
+**PostmagThemes Demo Import** sets up your site to look like the theme demo in a single click. Instead of creating posts, pages, menus and widgets by hand, activate the plugin, go to **Appearance > Import Demo Data**, and import. It works the same way as One Click Demo Import (OCDI).
 
 It is built for PostmagThemes themes, but it also works with **any theme** that provides standard demo files.
 
-The main advantage of this plugin is that theme developers can register their demo import files directly in their themes. Users then set up their website by simply clicking the **Import** button on the **Import Demo Data** page as a ocdi function.
+The main advantage of this plugin is that theme developers can register their demo import files directly in their themes. Users then set up their website by simply clicking the **Import** button on the **Import Demo Data** page, just like with normal ocdi for wordpress theme demo importer.
 
-
-Check out [demo of our ocdi](https://youtu.be/WaSYqGqYCro)
-
+Check out the [demo video of our ocdi](https://youtu.be/WaSYqGqYCro).
 
 = Features =
 
@@ -56,65 +54,64 @@ Integrate PostmagThemes Demo Import into your theme and make website setup easie
 
 **Step 1: Register your demo files**
 
-Add the following code to your theme's `functions.php`. Add it at the top level of the file, not inside your own `after_setup_theme` callback, otherwise the demo may not appear.
+Add the following code to your theme's `functions.php`. Add it at the top level of the file, not inside your own `after_setup_theme` callback, otherwise the demo may not appear. Replace `theme-text-domain` with your theme's text domain.
 
-```php
+    add_filter( 'pt-pmdi/import_files', function ( $import_files ) {
+        $import_files[] = array(
+            'import_file_name'           => esc_html__( 'My Theme Demo name', 'theme-text-domain' ),
+            'categories'                 => array( esc_html__( 'Blog', 'theme-text-domain' ) ),
+            'import_file_url'            => esc_url( 'https://example.com/demo/content.xml' ),
+            'import_widget_file_url'     => esc_url( 'https://example.com/demo/widgets.wie' ),
+            'import_customizer_file_url' => esc_url( 'https://example.com/demo/customizer.dat' ),
+            'import_preview_image_url'   => esc_url( 'https://example.com/demo/screenshot.png' ),
+            'preview_url'                => esc_url( 'https://example.com/demo/' ),
+            'import_notice'              => esc_html__( 'Optional note shown before import.', 'theme-text-domain' ),
+        );
+        return $import_files;
+    } );
 
-add_filter( 'pt-pmdi/import_files', function ( $import_files ) {
-    $import_files[] = array(
-        'import_file_name'           => esc_html__('My Theme Demo name', 'theme-text-domain'),
-        'categories'                 => array(esc_html__( 'Blog', 'theme-text-domain' )),
-        'import_file_url'            => esc_url( 'https://example.com/demo/content.xml' ),
-        'import_widget_file_url'     => esc_url( 'https://example.com/demo/widgets.wie'),
-        'import_customizer_file_url' => esc_url( 'https://example.com/demo/customizer.dat'),
-        'import_preview_image_url'   => esc_url( 'https://example.com/demo/screenshot.png'),
-        'preview_url'                => esc_url('https://example.com/demo/'),
-        'import_notice'              => esc_html__('Optional note shown before import.', 'theme-text-domain'),
-    );
-    return $import_files;
-} );
+**Step 2: Recommend the plugin to your users**
 
-```
+Add the following code to your theme's `functions.php` to show your users a notice with a link to install PostmagThemes Demo Import. Replace the `your_theme_` prefix and the `theme-text-domain` text domain with your own.
 
-**Step 2 : Recommend the plugin to your users**
+    function your_theme_demo_import_notice() {
+        // Hide if the plugin is already active or the user can't install plugins.
+        if ( class_exists( 'PMDI\OneClickDemoImport' ) || ! current_user_can( 'install_plugins' ) ) {
+            return;
+        }
 
-Add the following code to your theme's `functions.php` to show your users a notice with a link to install PostmagThemes Demo Import. Replace the `my_theme_` prefix and the `my-theme` text domain with your own.
-
-```php
-function your_theme_demo_import_notice() {
-    // Hide if the plugin is already active or the user can't install plugins.
-    if ( class_exists( 'PMDI\OneClickDemoImport' ) || ! current_user_can( 'install_plugins' ) ) {
-        return;
+        $url = admin_url( 'plugin-install.php?s=postmagthemes-demo-import&tab=search&type=term' );
+        ?>
+        <div class="notice notice-info is-dismissible">
+            <p>
+                <?php esc_html_e( 'Want your site to look like the theme demo? Install the free PostmagThemes Demo Import plugin to import the demo content in one click.', 'theme-text-domain' ); ?>
+                <a href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Get PostmagThemes Demo Import', 'theme-text-domain' ); ?></a>
+            </p>
+        </div>
+        <?php
     }
-
-    $url = admin_url( 'plugin-install.php?s=postmagthemes-demo-import&tab=search&type=term' );
-    ?>
-    <div class="notice notice-info is-dismissible">
-        <p>
-            <?php esc_html_e( 'Want your site to look like the theme demo? Install the free PostmagThemes Demo Import plugin to import the demo content in one click.', 'theme-text-domain' ); ?>
-            <a href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Get PostmagThemes Demo Import', 'theme-text-domain' ); ?></a>
-        </p>
-    </div>
-    <?php
-}
-add_action( 'admin_notices', 'your_theme_demo_import_notice' );
-
-```
+    add_action( 'admin_notices', 'your_theme_demo_import_notice' );
 
 **Step 3 (optional): Hide the PostmagThemes showcase**
 
 The Import Demo Data page shows PostmagThemes' free themes and plugins. If you prefer not to show them to your users, add this to your theme's `functions.php`:
 
-```php
-add_filter( 'pt-pmdi/show_wporg_showcase', '__return_false' );
-
-
-```
+    add_filter( 'pt-pmdi/show_wporg_showcase', '__return_false' );
 
 = Are you a theme user? =
 
 Ask your theme developer to support this plugin. Let them know how easy it makes setting up a site with their theme's demo.
-Note: Demo content is imported under the currently logged-in WordPress user. The plugin does provide an option to map author from the demo import files to existing users on your website.
+
+Note: By default, demo content is imported under the currently logged-in WordPress user. Before importing, you can choose a different existing user to be the author of the imported posts.
+
+= Contribute =
+
+PostmagThemes Demo Import is open source and developed on GitHub. Bug reports, feature ideas and pull requests are welcome:
+
+* [GitHub repository](https://github.com/postmagthemes/Postmagthemes-demo-import)
+* [Report a bug or request a feature](https://github.com/postmagthemes/Postmagthemes-demo-import/issues)
+
+For general help, please use the [support forum](https://wordpress.org/support/plugin/postmagthemes-demo-import/).
 
 = Credits =
 
@@ -156,6 +153,10 @@ Yes. By default, demo content is imported under the currently logged-in user. Be
 
 Register your demo files with the `pt-pmdi/import_files` filter in your theme's `functions.php`. See "Are you a theme developer?" in the Description for the code.
 
+= How can I contribute? =
+
+Visit the [GitHub repository](https://github.com/postmagthemes/Postmagthemes-demo-import) to report bugs, suggest features or send a pull request.
+
 = Will importing delete my existing content? =
 
 No. The importer adds the demo content alongside your existing content. We recommend importing on a fresh site for the best result.
@@ -168,9 +169,13 @@ No. The importer adds the demo content alongside your existing content. We recom
 
 == Changelog ==
 
+= 1.2.2 - November 9, 2026 =
+* Github contribution page added
+
 = 1.2.1 - November 8, 2026 =
 * Added: Optional review request after a successful import (dismissible, never shown again once dismissed).
-* Added: Instruction added in readme for theme developer to use this plugin for their theme.
+* Added: Instructions in the readme for theme developers to make their themes compatible.
+* Added: Contribution links to the GitHub repository.
 
 = 1.2.0 - November 6, 2026 =
 * Fixed: Corrected the minimum PHP version requirement.
@@ -248,7 +253,7 @@ No. The importer adds the demo content alongside your existing content. We recom
 == Upgrade Notice ==
 
 = 1.2.1 =
-Adds a small, dismissible review request after a successful import.
+Adds a small, dismissible review request after a successful import, and instructions for theme developers.
 
 = 1.2.0 =
 Corrects the minimum PHP version requirement.

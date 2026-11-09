@@ -56,7 +56,7 @@ Integrate PostmagThemes Demo Import into your theme and make website setup easie
 
 Add the following code to your theme's `functions.php`. Add it at the top level of the file, not inside your own `after_setup_theme` callback, otherwise the demo may not appear. Replace `theme-text-domain` with your theme's text domain.
 
-    `add_filter( 'pt-pmdi/import_files', function ( $import_files ) {
+    add_filter( 'pt-pmdi/import_files', function ( $import_files ) {
         $import_files[] = array(
             'import_file_name'           => esc_html__( 'My Theme Demo name', 'theme-text-domain' ),
             'categories'                 => array( esc_html__( 'Blog', 'theme-text-domain' ) ),
@@ -74,7 +74,7 @@ Add the following code to your theme's `functions.php`. Add it at the top level 
 
 Add the following code to your theme's `functions.php` to show your users a notice with a link to install PostmagThemes Demo Import. Replace the `your_theme_` prefix and the `theme-text-domain` text domain with your own.
 
-    `function your_theme_demo_import_notice() {
+    function your_theme_demo_import_notice() {
         // Hide if the plugin is already active or the user can't install plugins.
         if ( class_exists( 'PMDI\OneClickDemoImport' ) || ! current_user_can( 'install_plugins' ) ) {
             return;
@@ -90,13 +90,13 @@ Add the following code to your theme's `functions.php` to show your users a noti
         </div>
         <?php
     }
-    `add_action( 'admin_notices', 'your_theme_demo_import_notice' );
+    add_action( 'admin_notices', 'your_theme_demo_import_notice' );
 
 **Step 3 (optional): Hide the PostmagThemes showcase**
 
 The Import Demo Data page shows PostmagThemes' free themes and plugins. If you prefer not to show them to your users, add this to your theme's `functions.php`:
 
-    `add_filter( 'pt-pmdi/show_wporg_showcase', '__return_false' );
+    add_filter( 'pt-pmdi/show_wporg_showcase', '__return_false' );
 
 = Are you a theme user? =
 
